@@ -26,7 +26,7 @@ async function carregar() {
       live.innerText = "⚫ Offline";
       live.className = "offline";
     }
-  } catch (e) {
+  } catch {
     document.body.innerHTML = "<h2>Erro ao carregar dados</h2>";
   }
 }
