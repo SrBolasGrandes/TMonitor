@@ -1,24 +1,33 @@
-const username = window.location.pathname.replace("/", "");
+const username = window.location.pathname.split("/")[1];
 
 async function carregar() {
-  const res = await fetch(`/api/user/${username}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`/api/user/${username}`);
+    const data = await res.json();
 
-  avatar.src = data.avatar;
-  nickname.innerText = data.nickname;
-  document.getElementById("username").innerText = "@" + data.username;
+    if (data.error) {
+      document.body.innerHTML = `<h2>${data.error}</h2>`;
+      return;
+    }
 
-  seguidores.innerText = data.seguidores;
-  videos.innerText = data.videos;
-  curtidas.innerText = data.curtidas;
+    document.getElementById("avatar").src = data.avatar;
+    document.getElementById("nickname").innerText = data.nickname;
+    document.getElementById("username").innerText = "@" + data.username;
 
-  const live = document.getElementById("live");
-  if (data.isLive) {
-    live.innerText = "🔴 Ao vivo";
-    live.className = "online";
-  } else {
-    live.innerText = "⚫ Offline";
-    live.className = "offline";
+    document.getElementById("seguidores").innerText = data.seguidores;
+    document.getElementById("videos").innerText = data.videos;
+    document.getElementById("curtidas").innerText = data.curtidas;
+
+    const live = document.getElementById("live");
+    if (data.isLive) {
+      live.innerText = "🔴 Ao vivo";
+      live.className = "online";
+    } else {
+      live.innerText = "⚫ Offline";
+      live.className = "offline";
+    }
+  } catch (e) {
+    document.body.innerHTML = "<h2>Erro ao carregar dados</h2>";
   }
 }
 
