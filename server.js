@@ -3,22 +3,28 @@ const path = require("path");
 const { chromium } = require("playwright");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 app.use(express.static("public"));
 
 let browser;
 
+// inicia o navegador uma vez só
 async function getBrowser() {
   if (!browser) {
     browser = await chromium.launch({
       headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"]
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage"
+      ]
     });
   }
   return browser;
 }
 
+// API
 app.get("/api/user/:username", async (req, res) => {
   const username = req.params.username;
 
@@ -34,10 +40,10 @@ app.get("/api/user/:username", async (req, res) => {
     await page.waitForTimeout(3000);
 
     const data = await page.evaluate(() => {
-      const json = document.querySelector("#SIGI_STATE");
-      if (!json) return null;
+      const el = document.querySelector("#SIGI_STATE");
+      if (!el) return null;
 
-      const state = JSON.parse(json.textContent);
+      const state = JSON.parse(el.textContent);
       const user = Object.values(state.UserModule.users)[0];
       const stats = Object.values(state.UserModule.stats)[0];
 
@@ -54,15 +60,18 @@ app.get("/api/user/:username", async (req, res) => {
 
     await page.close();
 
-    if (!data) return res.json({ error: "Falha ao coletar dados" });
+    if (!data) {
+      return res.json({ error: "Não foi possível coletar dados" });
+    }
 
     res.json(data);
   } catch (err) {
     console.error(err);
-    res.json({ error: "Erro Playwright TikTok" });
+    res.json({ error: "Erro ao acessar o TikTok" });
   }
 });
 
+// rota dinâmica /{usuario}
 app.get("/:username", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "monitor.html"));
 });
