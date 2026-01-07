@@ -8,10 +8,14 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static("public"));
 
 app.get("/api/user/:username", async (req, res) => {
-  try {
-    const username = req.params.username;
+  const username = req.params.username;
 
+  try {
     const user = await TikTokScraper.getUserProfileInfo(username);
+
+    if (!user || !user.user) {
+      return res.json({ error: "Usuário não encontrado" });
+    }
 
     res.json({
       username: user.user.uniqueId,
@@ -20,11 +24,11 @@ app.get("/api/user/:username", async (req, res) => {
       seguidores: user.stats.followerCount,
       curtidas: user.stats.heartCount,
       videos: user.stats.videoCount,
-      seguindo: user.stats.followingCount,
-      isLive: user.user.isLive || false
+      isLive: user.user.isLive === true
     });
   } catch (err) {
-    res.status(500).json({ error: "Usuário não encontrado" });
+    console.error(err.message);
+    res.json({ error: "Falha ao buscar dados do TikTok" });
   }
 });
 
