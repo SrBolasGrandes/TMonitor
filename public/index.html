@@ -17,7 +17,7 @@
 
 <script>
 function ir() {
-  let user = document.getElementById("user").value.replace("@", "");
+  const user = document.getElementById("user").value.replace("@", "");
   if (user) window.location.href = "/" + user;
 }
 </script>
