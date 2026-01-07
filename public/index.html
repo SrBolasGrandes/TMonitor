@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>TikTok Monitor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="box">
+  <h1>TikTok Monitor</h1>
+  <p>Digite o @ do TikTok</p>
+
+  <input id="user" placeholder="@usuario">
+  <button onclick="ir()">Monitorar</button>
+</div>
+
+<script>
+function ir() {
+  let user = document.getElementById("user").value.replace("@", "");
+  if (user) window.location.href = "/" + user;
+}
+</script>
+
+</body>
+</html>
